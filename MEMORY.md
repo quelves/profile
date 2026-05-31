@@ -1,7 +1,7 @@
 # MEMORY.md — Memoria del Proyecto
 
-> **Última actualización:** 2026-05-31 13:15  
-> **Sesión:** #1 — Plan de stack Docker Swarm para QWS  
+> **Última actualización:** 2026-05-31 13:35  
+> **Sesión:** #2 — Reorganización a Dual Track (LQDS + QWS)  
 > **Actualizado por:** 🤖 Arch + 🤖 PO
 
 ---
@@ -10,18 +10,27 @@
 
 ### Sprint en Curso
 - **Sprint:** 0 de N (Bootstrap + Planificación)
-- **Objetivo:** Definir stack Docker Swarm y plan de infraestructura para la plataforma quelves.com
+- **Objetivo:** Definir estructura Dual Track y preparar deploy rápido de LQDS
 - **Días restantes:** N/A
-- **Estado:** 🟡 Planificación — esperando aprobación Leader
+- **Estado:** 🟡 Planificación — esperando aprobación Leader para prioridades
+
+### Track 1: LQDS — Site Estático (Foco Actual)
+- **Estado:** 🟢 Funcional — deploy en GitHub Pages activo
+- **Stack:** Next.js 16 + Static Export + GitHub Pages
+- **Ruta:** `site/`
+- **BasePath:** `/profile`
+- **Próximo objetivo:** Deploy rápido y estable, mejoras de contenido/visual
+
+### Track 2: QWS — Plataforma Fullstack (Fase 2)
+- **Estado:** 📋 Planificación
+- **Stack:** Next.js SSR + PostgreSQL + Redis + MinIO + Docker Swarm
+- **Ruta:** `platform/qws/`
+- **Infraestructura:** `platform/qws/docker-swarm-stack.yml` diseñado
+- **Próximo objetivo:** No codear sin aprobación Leader
 
 ### Historias Activas
 | ID | Historia | Agente | Estado | % |
 |----|----------|--------|--------|---|
-| N/A | N/A | N/A | N/A | N/A |
-
-### Historias en Modo Swarm
-| ID | Historia | 🐝 Equipo | Estado | % |
-|----|----------|-----------|--------|---|
 | N/A | N/A | N/A | N/A | N/A |
 
 ### Bloqueos Actuales
@@ -32,52 +41,48 @@
 ## 🏗️ Decisiones Recientes
 
 ### Técnicas
-- **Skill v3.14.0:** Instalado en `.claude/skills/mega-ia-team/` y `.kimi/skills/mega-ia-team/` (symlinks al skill global)
-- **AGENTS.md:** Actualizado en raíz del proyecto, con 13 roles (incluye DevBE, DB Lead)
+- **Dual Track aprobado por Leader (implícito):** El proyecto se divide en 2 tracks:
+  - **LQDS (Track 1):** Site estático — foco actual, deploy rápido
+  - **QWS (Track 2):** Plataforma fullstack — planificación, NO codear sin aprobación
+- **Repositorio:** `git@github.com:quelves/profile.git` — único repo, sin sub-repos
+- **Estructura de carpetas:**
+  - `site/` → Track 1 (LQDS)
+  - `platform/qws/` → Track 2 (QWS)
+  - `docs/` → Documentación global
+  - `content/` → Contenido markdown fuente de verdad
+- **Skill v3.14.0:** Instalado en `.claude/skills/mega-ia-team/` y `.kimi/skills/mega-ia-team/` (symlinks al skill global, NO en git)
+- **AGENTS.md:** Actualizado con 13 roles y separación clara Dual Track
 - **MEMORY.md + SESSION-STATE.md:** Creados y funcionales
 - **Estructura docs/:** Creada con README.md, IMPLEMENTATION-PLAN.md, EPICS-AND-HISTORIES.md, DASHBOARD.md, architecture/, testing/, operations/, platform/
-- **Épica QWS-E1:** Creada con 8 historias para infraestructura Docker Swarm
-- **docker-swarm-stack.yml:** Stack completo adaptado para QWS (8 servicios)
-- **Repositorio:** Configurado en `git@github.com:quelves/profile.git` (único repo, sin sub-repos)
+- **Épica QWS-E1:** Movida a planificación en `docs/epics/QWS-E1-infraestructura-docker-swarm/`
+- **docker-swarm-stack.yml:** Movido a `platform/qws/docker-swarm-stack.yml`
+- **.gitignore:** Robusto, cubre credenciales, .env*, secrets, builds, OS files, symlinks locales
 
-### Evolución del Proyecto (2026-05-31)
-- **Visión actualizada:** El proyecto evoluciona de portfolio estático (LQDS) a plataforma ejecutiva `quelves.com` (QWS)
-- **Stack objetivo:** Docker Swarm con PostgreSQL, Redis, MinIO, Next.js SSR, Traefik, Prometheus/Grafana
-- **Referencia:** Stack basado en `mega-sales-platform` (salpla) y `mega-ott-admin` (megott)
-- **Nuevos roles requeridos:** DevBE, DB Lead (ahora sí aplica backend + DB)
-- **Código de proyecto:** QWS (Quelves Web Site/Platform)
-
-### Stack Docker Swarm Definido
-| Servicio | Tecnología | Justificación |
-|----------|-----------|---------------|
-| Reverse Proxy | Traefik (external) | Consistente con referencias Mega |
-| Frontend | Next.js 16 + Node.js SSR | Evolución desde static export |
-| Backend API | Next.js API routes (mismo contenedor) | Simplifica despliegue, consistente con prompts |
-| Database | PostgreSQL 15 Alpine | Referencia salpla, Prisma ORM |
-| Cache | Redis 7 Alpine | Sesiones, rate limiting, query cache |
-| Object Storage | MinIO | Media assets, imágenes de contenido |
-| Observability | Prometheus + Grafana + cAdvisor + Node Exporter | Referencia salpla |
-| Secrets | Docker Swarm Secrets | Gestión segura de credenciales |
-
-### Servicios NO incluidos (vs salpla)
-- Kafka/Zookeeper: No requiere event streaming masivo
-- pgAdmin: Se usa herramienta local (DBeaver)
-- Java/Spring Boot: Backend unificado en Next.js API routes
+### Negocio
+- **LQDS:** Prioridad inmediata — el site estático debe estar deployado y funcional
+- **QWS:** Visión a largo plazo — plataforma con CMS, AI Studio, auth
+- **Contenido:** Los markdowns en `content/` son fuente de verdad para ambos tracks
 
 ---
 
 ## 🔧 Estado Técnico
 
-### Módulos
-- **site/:** 100% funcional (estático), despliegue automático a GitHub Pages
-- **content/:** Markdowns fuente de verdad para el portfolio
-- **docs/:** Estructura docs/ creada según skill @mega-ia-team/
-- **Plataforma QWS:** En fase de definición de infraestructura
+### Track 1: LQDS (site/)
+- **Build:** ✅ `npm run build` funciona (static export)
+- **Deploy:** ✅ GitHub Pages activo via `.github/workflows/deploy.yml`
+- **Contenido:** 59 artículos en `site/content/journal/`
+- **Páginas:** Home, About, Impact, Insights, Research, Advisory, Speaking, Contact
+- **i18n:** ES, EN, PT implementado
 
-### Infraestructura Actual
-- Staging: N/A (GitHub Pages como único entorno)
-- Producción: ✅ GitHub Pages activo via `.github/workflows/deploy.yml`
-- Futuro: Docker Swarm en VPS propio o infraestructura cloud
+### Track 2: QWS (platform/qws/)
+- **Stack:** Diseñado, no implementado
+- **docker-swarm-stack.yml:** Completo, listo para `docker stack deploy`
+- **Épicas:** QWS-E1 planificada con 8 historias
+
+### Infraestructura
+- **LQDS Prod:** ✅ GitHub Pages activo
+- **QWS Prod:** 🔴 Planificado (Docker Swarm en VPS/Cloud)
+- **QWS Monitor:** 🔴 Planificado (Grafana en `monitor.quelves.com`)
 
 ### Deuda Técnica
 - N/A
@@ -86,30 +91,35 @@
 
 ## 📋 Próximos Pasos
 
-### Para la Siguiente Sesión
-1. 👤 Leader: Aprobar Épica QWS-E1 y stack Docker Swarm propuesto
-2. 🤖 Arch: Crear ADR-001: Migración de Static Export a SSR con Docker Swarm
-3. 🤖 Arch: Crear ADR-002: Selección de stack de datos (PostgreSQL + Redis + MinIO)
-4. 🤖 DevLead: Iniciar historia QWS-E1-H1 (stack Docker Swarm)
+### Para la Siguiente Sesión (Track 1 — Prioridad)
+1. 👤 Leader: Definir qué mejoras/feature de LQDS hacer primero
+2. 🤖 PO: Crear épica LQDS-E1 con historias de mejoras/deploy
+3. 🤖 Arch: Revisar que el workflow de GitHub Pages funcione correctamente
+4. 🤖 DevFE: Implementar mejoras aprobadas del site estático
+
+### Para la Siguiente Sesión (Track 2 — Planificación)
+1. 👤 Leader: Aprobar o posponer Épica QWS-E1
+2. 🤖 Arch: Crear ADR-001 y ADR-002 cuando sea aprobado
+3. 🤖 PO: Refinar épicas QWS con el Leader
 
 ### Pendientes del Leader
-- [ ] Aprobar stack Docker Swarm propuesto
-- [ ] Aprobar Épica QWS-E1: Infraestructura Docker Swarm
-- [ ] Definir proveedor de infraestructura (VPS, cloud, on-premise)
-- [ ] Definir dominio definitivo (quelves.com ya apunta a algo?)
+- [ ] Definir feature/improvement prioritario para LQDS (site estático)
+- [ ] Aprobar o posponer trabajo en QWS
+- [ ] Definir si se hace deploy de LQDS ahora o hay que fixear algo primero
 
 ---
 
 ## 🧠 Contexto Importante para Recordar
 
-### Patrones del Proyecto (Legacy — Site Estático)
+### Patrones del Proyecto (Track 1: LQDS)
 - Usar Tailwind CSS para todo el styling (no CSS modules salvo justificación)
 - Datos en `site/lib/data.ts`, contenido en `/content/`
 - Páginas con Framer Motion requieren `"use client"`
 - Static export: `output: "export"`, `images.unoptimized: true`, `trailingSlash: true`
 - `basePath: "/profile"` para GitHub Pages
+- **NO agregar API routes en LQDS** (static export no las soporta)
 
-### Patrones del Proyecto (Futuro — QWS Plataforma)
+### Patrones del Proyecto (Track 2: QWS — Futuro)
 - Next.js 16 con SSR (sin static export)
 - PostgreSQL + Prisma ORM para modelo relacional
 - Redis para sesiones y cache
@@ -119,10 +129,17 @@
 - Traefik para ingress/reverse proxy
 
 ### Preferencias del Leader
-- Basar stack en referencias Mega (salpla, megott)
+- **Track 1 (LQDS) es prioridad** — deploy simple y rápido
+- **Track 2 (QWS) es planificación** — no codear sin aprobación explícita
+- Basar stack QWS en referencias Mega (salpla, megott)
 - Seguridad: secrets externos, no hardcodear credenciales
-- Observabilidad: Prometheus + Grafana obligatorio
-- Escalabilidad: mínimo 2 réplicas para servicios stateless
+- Observabilidad: Prometheus + Grafana obligatorio para QWS
 
 ### Lecciones Aprendidas
-- N/A
+- Separar claramente los tracks evita confusiones de scope
+- El .gitignore debe ser robusto desde el inicio
+- Los symlinks de skills locales no deben ir en git
+
+---
+
+*MEMORY.md — Dual Track: LQDS (foco actual) + QWS (fase 2)*

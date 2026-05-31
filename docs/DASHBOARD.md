@@ -1,6 +1,6 @@
 # DASHBOARD.md — Estado del Proyecto
 
-> **Proyecto:** Quelves Platform (QWS)  
+> **Proyecto:** Quelves Platform — Dual Track (LQDS + QWS)  
 > **Skill:** @mega-ia-team/ v3.14.0  
 > **Última actualización:** 2026-05-31
 
@@ -9,36 +9,47 @@
 ## 🚦 Estado General
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  BOOTSTRAP SKILL @mega-ia-team/ v3.14.0                 │
-│  ████████████████████████████████████████  100%         │
-│  Estado: 🟢 Completado                                  │
-├─────────────────────────────────────────────────────────┤
-│  ÉPICA QWS-E1: INFRAESTRUCTURA DOCKER SWARM             │
-│  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0%         │
-│  Estado: 🟡 Propuesta — Pendiente aprobación Leader     │
-└─────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────┐
+│  DUAL TRACK — Estado Global                                               │
+├───────────────────────────────────────────────────────────────────────────┤
+│                                                                           │
+│  TRACK 1: LQDS — Site Estático          TRACK 2: QWS — Plataforma        │
+│  ████████████████████████████████████   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   │
+│  Bootstrap: 100% ✅                     Planificación: 15% 🟡           │
+│  Foco Actual: 🔥 DEPLOY RÁPIDO          Fase: 📋 PLANIFICACIÓN          │
+│                                                                           │
+└───────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📊 Métricas del Proyecto
+## 📊 Métricas por Track
 
-| Métrica | Valor | Target | Estado |
-|---------|-------|--------|--------|
-| Cobertura de tests | N/A | 70% | ⚪ N/A |
-| Build exitoso | ✅ | Sí | 🟢 OK (estático) |
-| Stack Docker Swarm | 🟡 | N/A | 🟡 En definición |
-| Lighthouse Score | N/A | >90 | ⚪ N/A |
-| Dependencias vulnerables | N/A | 0 High/Critical | ⚪ N/A |
+| Métrica | LQDS (Track 1) | QWS (Track 2) |
+|---------|----------------|---------------|
+| Build exitoso | ✅ Sí (static export) | ⚪ N/A |
+| Deploy activo | ✅ GitHub Pages | 🔴 Planificado |
+| Cobertura tests | ⚪ N/A | ⚪ N/A |
+| Lighthouse Score | 🟡 Por medir | ⚪ N/A |
+| Stack definido | ✅ Sí | ✅ Sí |
+| Infraestructura | ✅ GitHub Actions | 🟡 Diseñada |
 
 ---
 
-## 📋 Épicas
+## 📋 Épicas por Track
+
+### Track 1: LQDS (Site Estático)
 
 | Épica | Estado | Progreso | Dueño | SP |
 |-------|--------|----------|-------|----|
-| QWS-E1: Infraestructura Docker Swarm | 🟡 Propuesta | 0% | 🤖 Arch | 40 |
+| LQDS-E1: Mejoras del Site | 🟡 Propuesta | 0% | 🤖 DevLead | TBD |
+| LQDS-E2: Release v1.0 | 🔴 Pendiente | 0% | 🤖 DevLead | TBD |
+
+### Track 2: QWS (Plataforma)
+
+| Épica | Estado | Progreso | Dueño | SP |
+|-------|--------|----------|-------|----|
+| QWS-E1: Infra Docker Swarm | 🟡 Planificada | 0% | 🤖 Arch | 40 |
 | QWS-E2: Modelo de Datos | 🔴 Pendiente | 0% | 🤖 DB Lead | TBD |
 | QWS-E3: Autenticación | 🔴 Pendiente | 0% | 🤖 Arch | TBD |
 | QWS-E4: Sitio Público | 🔴 Pendiente | 0% | 🤖 DevFE | TBD |
@@ -57,23 +68,23 @@
 
 ## 🔧 Infraestructura
 
-| Entorno | Plataforma | URL | Estado |
-|---------|-----------|-----|--------|
-| Producción (Legacy) | GitHub Pages | `https://<username>.github.io/profile/` | ✅ Activo |
-| Producción (Futuro) | Docker Swarm | `https://quelves.com` | 🔴 Planificado |
-| Staging | Docker Swarm | `https://staging.quelves.com` | 🔴 Planificado |
-| Monitor | Grafana | `https://monitor.quelves.com` | 🔴 Planificado |
-| Storage | MinIO | `https://storage.quelves.com` | 🔴 Planificado |
+| Entorno | Plataforma | URL | Track | Estado |
+|---------|-----------|-----|-------|--------|
+| Producción LQDS | GitHub Pages | `https://quelves.github.io/profile/` | LQDS | ✅ Activo |
+| Producción QWS | Docker Swarm | `https://quelves.com` | QWS | 🔴 Planificado |
+| Monitor QWS | Grafana | `https://monitor.quelves.com` | QWS | 🔴 Planificado |
+| Storage QWS | MinIO | `https://storage.quelves.com` | QWS | 🔴 Planificado |
 
 ---
 
 ## 📝 Notas
 
-- Skill @mega-ia-team/ v3.14.0 instalado y sincronizado
-- Proyecto evoluciona de LQDS (portfolio estático) a QWS (plataforma fullstack)
-- Stack Docker Swarm diseñado basado en referencias salpla + megott
-- Épica QWS-E1 lista para aprobación del Leader
-- Próximo ADR pendiente: ADR-001 (Static Export → SSR + Docker Swarm)
+- Proyecto reorganizado a **Dual Track** (LQDS + QWS)
+- **Track 1 (LQDS)** es el foco actual: deploy rápido y simple
+- **Track 2 (QWS)** es planificación: no codear sin aprobación Leader
+- `site/` contiene el proyecto estático actual
+- `platform/qws/` contiene el stack Docker Swarm diseñado
+- `docs/epics/` separa épicas LQDS y QWS
 
 ---
 

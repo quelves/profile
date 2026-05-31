@@ -1,34 +1,30 @@
 # SESSION-STATE
 
 ## Activo Ahora
-- Historia: QWS-E1 (Planificación — sin branch activo aún)
+- Historia: N/A (reorganización Dual Track completada)
 - Branch: main
-- Agente responsable: 🤖 Arch
+- Agente responsable: 🤖 Arch + 🤖 PO
 
-## Última Acción (2026-05-31 13:30)
-- Acción: Limpieza de credenciales + .gitignore robusto
-- Commit: `b167a93` — "chore(git): add comprehensive .gitignore and remove tracked secrets/credentials"
-- Cambios: Eliminados .DS_Store, .claude/, .kimi/, .no_commit/ del tracking
-- .gitignore raíz: 121 líneas cubriendo credenciales, .env*, secrets, builds, OS files, IDE configs
-- Historial previo: `8473132` — reorganización completa del repositorio
-- Archivos creados/actualizados:
-  - `docker-swarm-stack.yml` (stack completo adaptado)
-  - `docs/epics/QWS-E1-infraestructura-docker-swarm/` (épica + 8 historias)
-  - `docs/platform/README.md`
-  - `docs/IMPLEMENTATION-PLAN.md` actualizado
-  - `docs/EPICS-AND-HISTORIES.md` actualizado
-  - `docs/DASHBOARD.md` actualizado
-  - `AGENTS.md` actualizado (DevBE, DB Lead, stack QWS)
-  - `MEMORY.md` actualizado
-  - `site/` movido dentro del repo único (sin sub-repo)
-  - `.git` movido de `site/` a raíz del proyecto
+## Track Activo
+- **Track 1 (LQDS):** Site estático — 🟢 Funcional, deploy en GitHub Pages
+- **Track 2 (QWS):** Plataforma fullstack — 📋 Planificación
+- **Prioridad del Leader:** Track 1 (deploy rápido y simple)
+
+## Última Acción (2026-05-31 13:35)
+- Acción: Reorganización a estructura Dual Track (LQDS + QWS)
+- Commit: `bdb74da` — "docs(state): update SESSION-STATE and MEMORY after git cleanup"
+- Cambios:
+  - AGENTS.md: Dual Track con 13 roles, separación clara LQDS/QWS
+  - MEMORY.md: Contexto Dual Track, próximos pasos por track
+  - docker-swarm-stack.yml: Movido a `platform/qws/`
+  - platform/docs/: Documentación de infraestructura QWS
+  - docs/: Estructura de épicas separada LQDS/QWS
 
 ## Pendiente Inmediato
-- [ ] 👤 Leader aprobar stack Docker Swarm y Épica QWS-E1
-- [ ] 👤 Leader aprobar cambio de código de proyecto LQDS → QWS
-- [ ] 🤖 Arch crear ADRs (ADR-001, ADR-002) tras aprobación
-- [ ] 🤖 PO ajustar SP de épicas planificadas si es necesario
-- [ ] 🤖 DevLead iniciar QWS-E1-H1 (feature branch)
+- [ ] 👤 Leader definir feature prioritario para LQDS (site estático)
+- [ ] 🤖 PO crear Épica LQDS-E1 con historias de mejoras/deploy
+- [ ] 🤖 Arch validar workflow de GitHub Pages para deploy rápido
+- [ ] 👤 Leader aprobar o posponer trabajo en QWS
 
 ## Bloqueos
 - Ninguno
