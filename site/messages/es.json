@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "title": "QUELVES | Technology Transformation Executive",
+    "description": "Transformamos organizaciones mediante IA, Plataformas Digitales y Arquitectura Empresarial. Veinticinco años de liderazgo tecnológico, investigación e innovación para la era de la empresa autónoma."
+  },
+  "nav": {
+    "home": "Home",
+    "impact": "Impact",
+    "insights": "Insights",
+    "research": "Research",
+    "advisory": "Advisory",
+    "speaking": "Speaking",
+    "about": "About",
+    "contact": "Contacto"
+  },
+  "hero": {
+    "tagline": "Technology Transformation Executive with 25+ years leading digital transformation, enterprise architecture, cloud-native platforms and AI-driven innovation across Latin America.",
+    "cta": {
+      "impact": "Impact",
+      "insights": "Insights",
+      "research": "Research",
+      "advisory": "Advisory"
+    }
+  },
+  "footer": {
+    "brand": "QUELVES",
+    "tagline": "Technology Transformation Executive",
+    "rights": "QUELVES. Todos los derechos reservados.",
+    "built": "Construido con Next.js, Tailwind CSS y pasión por la tecnología."
+  }
+}

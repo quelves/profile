@@ -1,0 +1,428 @@
+# =============================================================================
+# QWS: Docker Swarm Stack — Quelves Platform
+# =============================================================================
+# Stack de infraestructura para la plataforma ejecutiva quelves.com
+# Basado en referencias: mega-sales-platform (salpla) + mega-ott-admin (megott)
+#
+# Uso:
+#   docker stack deploy -c docker-swarm-stack.yml qws
+#
+# Pre-requisitos:
+#   - Docker Swarm inicializado
+#   - Network externa "traefik-network" creada
+#   - Secrets creados en el swarm
+#   - Configs creados en el swarm
+# =============================================================================
+
+version: "3.9"
+
+services:
+  # ---------------------------------------------------------------------------
+  # APP — Next.js 16 SSR (Frontend + API Routes)
+  # ---------------------------------------------------------------------------
+  qws_app:
+    image: "${REGISTRY}${IMAGE_APP}:${TAG:-latest}"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://qws_postgres:5432/quelves?schema=public
+      - DATABASE_URL_FILE=/run/secrets/qws_db_url
+      - REDIS_URL=redis://:qws_redis@qws_redis:6379
+      - REDIS_URL_FILE=/run/secrets/qws_redis_url
+      - NEXTAUTH_URL=https://quelves.com
+      - NEXTAUTH_SECRET_FILE=/run/secrets/qws_nextauth_secret
+      - MINIO_ENDPOINT=qws_minio:9000
+      - MINIO_ROOT_USER_FILE=/run/secrets/qws_minio_user
+      - MINIO_ROOT_PASSWORD_FILE=/run/secrets/qws_minio_pass
+      - LLM_API_KEY_FILE=/run/secrets/qws_llm_api_key
+    secrets:
+      - qws_db_url
+      - qws_redis_url
+      - qws_nextauth_secret
+      - qws_minio_user
+      - qws_minio_pass
+      - qws_llm_api_key
+    networks:
+      - traefik-network
+      - qws_network
+    deploy:
+      replicas: 2
+      update_config:
+        order: start-first
+        parallelism: 1
+        delay: 20s
+        failure_action: rollback
+        monitor: 60s
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-network"
+        - "traefik.http.routers.qws-app.rule=Host(`quelves.com`) || Host(`www.quelves.com`)"
+        - "traefik.http.routers.qws-app.entrypoints=https"
+        - "traefik.http.routers.qws-app.tls=true"
+        - "traefik.http.routers.qws-app.tls.certresolver=letsencrypt"
+        - "traefik.http.services.qws-app.loadbalancer.server.port=3000"
+        - "traefik.http.services.qws-app.loadbalancer.healthcheck.path=/api/health"
+        - "traefik.http.services.qws-app.loadbalancer.healthcheck.interval=10s"
+        - "traefik.http.services.qws-app.loadbalancer.healthcheck.timeout=5s"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+        labels: "service_name,environment"
+
+  # ---------------------------------------------------------------------------
+  # POSTGRESQL — Base de datos principal
+  # ---------------------------------------------------------------------------
+  qws_postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=quelves
+      - POSTGRES_USER_FILE=/run/secrets/qws_db_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/qws_db_pass
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8 --locale=en_US.UTF-8
+    secrets:
+      - qws_db_user
+      - qws_db_pass
+    volumes:
+      - qws_postgres_data:/var/lib/postgresql/data
+    networks:
+      - qws_network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.qws.datastore == true
+      restart_policy:
+        condition: any
+        delay: 10s
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$(cat /run/secrets/qws_db_user) -d quelves"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ---------------------------------------------------------------------------
+  # REDIS — Cache, sesiones, rate limiting
+  # ---------------------------------------------------------------------------
+  qws_redis:
+    image: redis:7-alpine
+    command: >
+      sh -c "redis-server
+      --requirepass $$(cat /run/secrets/qws_redis_pass)
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --appendfsync everysec"
+    secrets:
+      - qws_redis_pass
+    volumes:
+      - qws_redis_data:/data
+    networks:
+      - qws_network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.qws.datastore == true
+      restart_policy:
+        condition: any
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # MINIO — Object Storage (media assets, imágenes)
+  # ---------------------------------------------------------------------------
+  qws_minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER_FILE=/run/secrets/qws_minio_user
+      - MINIO_ROOT_PASSWORD_FILE=/run/secrets/qws_minio_pass
+    secrets:
+      - qws_minio_user
+      - qws_minio_pass
+    volumes:
+      - qws_minio_data:/data
+    networks:
+      - traefik-network
+      - qws_network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.qws.datastore == true
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-network"
+        - "traefik.http.routers.qws-minio.rule=Host(`storage.quelves.com`)"
+        - "traefik.http.routers.qws-minio.entrypoints=https"
+        - "traefik.http.routers.qws-minio.tls=true"
+        - "traefik.http.routers.qws-minio.tls.certresolver=letsencrypt"
+        - "traefik.http.services.qws-minio.loadbalancer.server.port=9001"
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # PROMETHEUS — Métricas
+  # ---------------------------------------------------------------------------
+  qws_prometheus:
+    image: prom/prometheus:v2.48.0
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--web.enable-lifecycle"
+    configs:
+      - source: qws_prometheus_config
+        target: /etc/prometheus/prometheus.yml
+    volumes:
+      - qws_prometheus_data:/prometheus
+    networks:
+      - traefik-network
+      - qws_network
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-network"
+        - "traefik.http.routers.qws-prometheus.rule=Host(`metrics.quelves.com`)"
+        - "traefik.http.routers.qws-prometheus.entrypoints=https"
+        - "traefik.http.routers.qws-prometheus.tls=true"
+        - "traefik.http.routers.qws-prometheus.tls.certresolver=letsencrypt"
+        - "traefik.http.services.qws-prometheus.loadbalancer.server.port=9090"
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # GRAFANA — Dashboards
+  # ---------------------------------------------------------------------------
+  qws_grafana:
+    image: grafana/grafana:10.2.3
+    environment:
+      - GF_SECURITY_ADMIN_USER_FILE=/run/secrets/qws_grafana_user
+      - GF_SECURITY_ADMIN_PASSWORD_FILE=/run/secrets/qws_grafana_pass
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=https://monitor.quelves.com
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    secrets:
+      - qws_grafana_user
+      - qws_grafana_pass
+    volumes:
+      - qws_grafana_data:/var/lib/grafana
+      - qws_grafana_provisioning:/etc/grafana/provisioning
+    networks:
+      - traefik-network
+      - qws_network
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-network"
+        - "traefik.http.routers.qws-grafana.rule=Host(`monitor.quelves.com`)"
+        - "traefik.http.routers.qws-grafana.entrypoints=https"
+        - "traefik.http.routers.qws-grafana.tls=true"
+        - "traefik.http.routers.qws-grafana.tls.certresolver=letsencrypt"
+        - "traefik.http.services.qws-grafana.loadbalancer.server.port=3000"
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # CADVISOR — Métricas de contenedores (global)
+  # ---------------------------------------------------------------------------
+  qws_cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - qws_network
+    deploy:
+      mode: global
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ---------------------------------------------------------------------------
+  # NODE EXPORTER — Métricas de host (global)
+  # ---------------------------------------------------------------------------
+  qws_node_exporter:
+    image: prom/node-exporter:v1.7.0
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.rootfs=/rootfs"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    networks:
+      - qws_network
+    deploy:
+      mode: global
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# =============================================================================
+# NETWORKS
+# =============================================================================
+networks:
+  traefik-network:
+    external: true
+    name: traefik-network
+  qws_network:
+    driver: overlay
+    attachable: true
+    ipam:
+      config:
+        - subnet: 10.0.200.0/24
+
+# =============================================================================
+# VOLUMES
+# =============================================================================
+volumes:
+  qws_postgres_data:
+    driver: local
+  qws_redis_data:
+    driver: local
+  qws_minio_data:
+    driver: local
+  qws_prometheus_data:
+    driver: local
+  qws_grafana_data:
+    driver: local
+  qws_grafana_provisioning:
+    driver: local
+
+# =============================================================================
+# CONFIGS
+# =============================================================================
+configs:
+  qws_prometheus_config:
+    external: true
+
+# =============================================================================
+# SECRETS
+# =============================================================================
+secrets:
+  qws_db_user:
+    external: true
+  qws_db_pass:
+    external: true
+  qws_db_url:
+    external: true
+  qws_redis_pass:
+    external: true
+  qws_redis_url:
+    external: true
+  qws_minio_user:
+    external: true
+  qws_minio_pass:
+    external: true
+  qws_grafana_user:
+    external: true
+  qws_grafana_pass:
+    external: true
+  qws_nextauth_secret:
+    external: true
+  qws_llm_api_key:
+    external: true
