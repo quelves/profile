@@ -33,11 +33,12 @@
 
 ### Técnicas
 - **Skill v3.14.0:** Instalado en `.claude/skills/mega-ia-team/` y `.kimi/skills/mega-ia-team/` (symlinks al skill global)
-- **AGENTS.md:** Creado en raíz del proyecto, adaptado para portfolio frontend-only
+- **AGENTS.md:** Actualizado en raíz del proyecto, con 13 roles (incluye DevBE, DB Lead)
 - **MEMORY.md + SESSION-STATE.md:** Creados y funcionales
-- **Estructura docs/:** Creada con README.md, IMPLEMENTATION-PLAN.md, EPICS-AND-HISTORIES.md, DASHBOARD.md, architecture/, testing/, operations/
-- **Roles activos:** PO, Arch, DevLead, DevFE, UI/UX, QA, SRE (simplificado), Sec, Scribe, CodeRev, SecRev
-- **Roles omitidos:** DevBE, DB Lead (no aplica a proyecto estático sin backend ni DB)
+- **Estructura docs/:** Creada con README.md, IMPLEMENTATION-PLAN.md, EPICS-AND-HISTORIES.md, DASHBOARD.md, architecture/, testing/, operations/, platform/
+- **Épica QWS-E1:** Creada con 8 historias para infraestructura Docker Swarm
+- **docker-swarm-stack.yml:** Stack completo adaptado para QWS (8 servicios)
+- **Repositorio:** Configurado en `git@github.com:quelves/profile.git` (único repo, sin sub-repos)
 
 ### Evolución del Proyecto (2026-05-31)
 - **Visión actualizada:** El proyecto evoluciona de portfolio estático (LQDS) a plataforma ejecutiva `quelves.com` (QWS)
