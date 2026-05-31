@@ -5,10 +5,12 @@
 - Branch: main
 - Agente responsable: 🤖 Arch
 
-## Última Acción (2026-05-31 13:25)
-- Acción: Reorganización completa del repositorio + commit inicial
-- Commit: `8473132` — "chore(repo): migrate entire project to quelves/profile.git root"
-- Cambios: 150 archivos, +6636/-45 líneas
+## Última Acción (2026-05-31 13:30)
+- Acción: Limpieza de credenciales + .gitignore robusto
+- Commit: `b167a93` — "chore(git): add comprehensive .gitignore and remove tracked secrets/credentials"
+- Cambios: Eliminados .DS_Store, .claude/, .kimi/, .no_commit/ del tracking
+- .gitignore raíz: 121 líneas cubriendo credenciales, .env*, secrets, builds, OS files, IDE configs
+- Historial previo: `8473132` — reorganización completa del repositorio
 - Archivos creados/actualizados:
   - `docker-swarm-stack.yml` (stack completo adaptado)
   - `docs/epics/QWS-E1-infraestructura-docker-swarm/` (épica + 8 historias)
