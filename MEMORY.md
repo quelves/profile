@@ -1,8 +1,8 @@
 # MEMORY.md — Memoria del Proyecto
 
-> **Última actualización:** 2026-05-31 13:35  
-> **Sesión:** #2 — Reorganización a Dual Track (LQDS + QWS)  
-> **Actualizado por:** 🤖 Arch + 🤖 PO
+> **Última actualización:** 2026-05-31 14:30  
+> **Sesión:** #3 — Auditoría documentación + skill v3.14.0 compliance  
+> **Actualizado por:** 🤖 Arch + 🤖 Scribe
 
 ---
 
@@ -54,7 +54,13 @@
 - **AGENTS.md:** Actualizado con 13 roles y separación clara Dual Track
 - **MEMORY.md + SESSION-STATE.md:** Creados y funcionales
 - **Estructura docs/:** Creada con README.md, IMPLEMENTATION-PLAN.md, EPICS-AND-HISTORIES.md, DASHBOARD.md, architecture/, testing/, operations/, platform/
-- **Épica QWS-E1:** Movida a planificación en `docs/epics/QWS-E1-infraestructura-docker-swarm/`
+- **Docs globales:** CONTEXT.md, README.md, ROADMAP.md creados en raíz
+- **Docs testing:** docs/testing/README.md + docs/testing/strategy.md creados
+- **Épica QWS-E1:** Completamente reestructurada según skill v3.14.0:
+  - Historias movidas a `stories/HN-name/HN-name.md`
+  - Creados `analysis.md`, `limitations.md`, `tests/epic-test-plan.md`
+  - Placeholders de spec packages (behavior.md, asr.md, test-strategy.md, tech-spec.md) para H1-H8
+  - README.md actualizado con índice completo y columnas de estado
 - **docker-swarm-stack.yml:** Movido a `platform/qws/docker-swarm-stack.yml`
 - **.gitignore:** Robusto, cubre credenciales, .env*, secrets, builds, OS files, symlinks locales
 
@@ -77,7 +83,7 @@
 ### Track 2: QWS (platform/qws/)
 - **Stack:** Diseñado, no implementado
 - **docker-swarm-stack.yml:** Completo, listo para `docker stack deploy`
-- **Épicas:** QWS-E1 planificada con 8 historias
+- **Épicas:** QWS-E1 planificada con 8 historias + estructura completa skill v3.14.0
 
 ### Infraestructura
 - **LQDS Prod:** ✅ GitHub Pages activo

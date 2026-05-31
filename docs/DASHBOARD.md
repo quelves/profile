@@ -14,8 +14,8 @@
 ├───────────────────────────────────────────────────────────────────────────┤
 │                                                                           │
 │  TRACK 1: LQDS — Site Estático          TRACK 2: QWS — Plataforma        │
-│  ████████████████████████████████████   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   │
-│  Bootstrap: 100% ✅                     Planificación: 15% 🟡           │
+│  ████████████████████████████████████   ██░░░░░░░░░░░░░░░░░░░░░░░░░░░░   │
+│  Bootstrap: 100% ✅                     Planificación: 25% 🟡           │
 │  Foco Actual: 🔥 DEPLOY RÁPIDO          Fase: 📋 PLANIFICACIÓN          │
 │                                                                           │
 └───────────────────────────────────────────────────────────────────────────┘
@@ -49,7 +49,7 @@
 
 | Épica | Estado | Progreso | Dueño | SP |
 |-------|--------|----------|-------|----|
-| QWS-E1: Infra Docker Swarm | 🟡 Planificada | 0% | 🤖 Arch | 40 |
+| QWS-E1: Infra Docker Swarm | 🟡 Planificada | 25% | 🤖 Arch | 40 |
 | QWS-E2: Modelo de Datos | 🔴 Pendiente | 0% | 🤖 DB Lead | TBD |
 | QWS-E3: Autenticación | 🔴 Pendiente | 0% | 🤖 Arch | TBD |
 | QWS-E4: Sitio Público | 🔴 Pendiente | 0% | 🤖 DevFE | TBD |
