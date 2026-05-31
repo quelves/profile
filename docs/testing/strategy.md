@@ -1,6 +1,6 @@
 # strategy.md — Estrategia de Testing
 
-> **Proyecto:** Profile / Portfolio Project (LQDS)  
+> **Proyecto:** Quelves Platform — Dual Track (LQDS + QWS)  
 > **Skill:** @mega-ia-team/ v3.14.0
 
 ---

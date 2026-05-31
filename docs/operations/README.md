@@ -1,6 +1,6 @@
 # operations/ — Runbooks y Operaciones
 
-> **Proyecto:** Profile / Portfolio Project (LQDS)
+> **Proyecto:** Quelves Platform — Dual Track (LQDS + QWS)
 
 ---
 

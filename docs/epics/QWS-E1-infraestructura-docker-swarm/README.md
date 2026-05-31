@@ -3,6 +3,7 @@
 > **Skill:** @mega-ia-team/ v3.14.0  
 > **Proyecto:** Quelves Platform (QWS)  
 > **Estado:** 🟡 Propuesta — pendiente aprobación Leader  
+**Checkpoint:** 🤖 QA validó que la épica es testable antes del feature start  
 > **Story Points:** 40  
 > **Target Sprint:** Sprint 1
 
@@ -72,16 +73,16 @@ Construir el stack de infraestructura Docker Swarm completo para la plataforma `
 
 ## 📊 Historias de la Épica
 
-| ID | Historia | SP | Estado |
-|----|----------|----|--------|
-| QWS-E1-H1 | Diseñar y documentar stack Docker Swarm completo | 5 | 🔴 |
-| QWS-E1-H2 | Configurar PostgreSQL con secrets, volumen y healthcheck | 5 | 🔴 |
-| QWS-E1-H3 | Configurar Redis para cache, sesiones y rate limiting | 3 | 🔴 |
-| QWS-E1-H4 | Configurar MinIO como object storage para media assets | 3 | 🔴 |
-| QWS-E1-H5 | Configurar observabilidad: Prometheus + Grafana + exporters | 5 | 🔴 |
-| QWS-E1-H6 | Configurar Traefik labels y routing para servicios | 3 | 🔴 |
-| QWS-E1-H7 | Crear scripts de inicialización de secrets y configs | 3 | 🔴 |
-| QWS-E1-H8 | Crear runbooks de operación y deploy | 3 | 🔴 |
+| ID | Historia | SP | Estado | Spec Package |
+|----|----------|----|--------|--------------|
+| QWS-E1-H1 | Diseñar y documentar stack Docker Swarm completo | 5 | 🔴 | 🟡 Plantilla |
+| QWS-E1-H2 | Configurar PostgreSQL con secrets, volumen y healthcheck | 5 | 🔴 | 🟡 Plantilla |
+| QWS-E1-H3 | Configurar Redis para cache, sesiones y rate limiting | 3 | 🔴 | 🟡 Plantilla |
+| QWS-E1-H4 | Configurar MinIO como object storage para media assets | 3 | 🔴 | 🟡 Plantilla |
+| QWS-E1-H5 | Configurar observabilidad: Prometheus + Grafana + exporters | 5 | 🔴 | 🟡 Plantilla |
+| QWS-E1-H6 | Configurar Traefik labels y routing para servicios | 3 | 🔴 | 🟡 Plantilla |
+| QWS-E1-H7 | Crear scripts de inicialización de secrets y configs | 3 | 🔴 | 🟡 Plantilla |
+| QWS-E1-H8 | Crear runbooks de operación y deploy | 3 | 🔴 | 🟡 Plantilla |
 
 ---
 
